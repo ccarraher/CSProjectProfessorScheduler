@@ -1,8 +1,14 @@
-import {RouterProvider} from 'react-router-dom'
-import { Router } from '../routing/router'
+import { ThemeProvider } from '@mui/material'
+import { theme } from '../theme/theme';
+import * as React from 'react'
+import { AuthProvider } from '../hooks/use-auth';
 
-export const Providers = () => {
+export const Providers = ({children}: React.HTMLAttributes<HTMLDivElement>) => {
     return (
-        <RouterProvider router={Router} />
+        <ThemeProvider theme={theme}>
+            <AuthProvider>
+                {children}
+            </AuthProvider>
+        </ThemeProvider>
     )
 }
