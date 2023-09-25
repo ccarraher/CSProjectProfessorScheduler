@@ -1,10 +1,6 @@
-import { useContext } from "react"
-import { AuthContext } from "../hooks/use-auth"
-import { Box, Button, Paper, Toolbar, Typography } from "@mui/material"
+import { Box, Paper, Toolbar, Typography } from "@mui/material"
 
 export const HomePage = () => {
-    const {logout} = useContext(AuthContext)
-
     return (
         <Box sx={{display: 'flex', flexDirection: 'column', width: '100%'}}>
             <Toolbar />
