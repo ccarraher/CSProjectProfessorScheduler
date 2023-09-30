@@ -30,6 +30,11 @@ export const SideNav = () => {
 const sideNavChoices = [
     {
         text: 'Home',
-        icon: 'Home'
+        icon: 'Home',
     },
+    {
+        text: 'Schedule',
+        icon: 'Schedule',
+    },
+
 ]
