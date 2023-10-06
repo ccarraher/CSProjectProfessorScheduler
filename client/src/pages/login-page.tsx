@@ -9,7 +9,9 @@ import { Paper, Typography } from '@mui/material'
 import { AuthContext } from '../hooks/use-auth'
 import * as React from 'react'
 
-export const LoginPage = () => {
+
+
+export const LoginPage = (props: any) => {
     const { login } = React.useContext(AuthContext)
     const defaultValues = {username: '', password: ''}
     const methods = useForm<LoginFormInputs>({mode: 'onBlur', resolver: zodResolver(LoginFormSchema), defaultValues: defaultValues})
@@ -24,6 +26,7 @@ export const LoginPage = () => {
                         <RhfTextField name={LoginFormFieldNames.password} label="Password" muiProps={{required: true, type: 'password'}} />
                         <Button onClick={handleSubmit(login)} variant="contained">Login</Button>
                     </Box>
+                    <Button onClick={() => props.onFormSwitch('register-page')} sx={{ marginLeft: '100px', position: 'relative', alignItems:'center', justifyContent:'center'}}>Don't have an account? Sign up here.</Button>
                 </FormProvider>
             </Paper>
         </Box>
