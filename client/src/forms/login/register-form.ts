@@ -7,9 +7,23 @@ export const RegisterFormSchema = z.object({
     password: z.string({ required_error: 'Password is required' }).regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
 			message:'Password must be a minimum of 8 characters & contain at least one letter, one number, and one special character.' }),
     password2: z.string({ required_error: 'Password confirmation is required' }).regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
-            message:'Password must be a minimum of 8 characters & contain at least one letter, one number, and one special character.' })
-       
+            message:'Password must be a minimum of 8 characters & contain at least one letter, one number, and one special character.' })   
 })
-export type RegisterFormModel = z.infer<typeof RegisterFormSchema>
 
+// This code segment verifies the password and confirm password sections
+// are the same. When added, I get an error with export const RegisterFormFieldNames
+
+/* .superRefine(({ password2, password }, ctx) => {
+    if (password2 !== password){
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Password must match confirm password',
+            path: ['password']
+        });
+    }
+});
+*/ 
+
+
+export type RegisterFormModel = z.infer<typeof RegisterFormSchema>
 export const RegisterFormFieldNames = RegisterFormSchema.keyof().Enum
