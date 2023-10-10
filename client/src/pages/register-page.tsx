@@ -1,4 +1,4 @@
-import {useForm, FormProvider} from 'react-hook-form'
+import {useForm, FormProvider, SubmitHandler} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import { RhfTextField } from '../components/rhf-text-field'
 import { RegisterFormFieldNames, RegisterFormSchema } from '../forms/login/register-form'
@@ -6,13 +6,25 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box'
 import { theme } from '../theme/theme'
 import { Paper, Typography } from '@mui/material'
-import { AuthContext } from '../hooks/use-auth'
-import * as React from 'react'
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import {Link} from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
 
 
-
-export const RegisterPage = (props: any) => {
-    const { register } = React.useContext(AuthContext)
+export const RegisterPage = () => {
+    const navigate = useNavigate()
+    const register: SubmitHandler<RegisterFormInputs> = (userCreds: RegisterFormInputs) => {
+        axios.post('http://localhost:8080/register', {
+            username: userCreds.username,
+            password: userCreds.password,
+            firstName: userCreds.firstname,
+            lastName: userCreds.lastname
+        })
+        .then(() => {
+            (navigate('/login'))    // keep getting errors when code writte is .then(navigate('/login'))
+        })
+    }
     const defaultValues = {first: '', last: '', username: '', password: '', password2: ''}
     const methods = useForm<RegisterFormInputs>({mode: 'onBlur', resolver: zodResolver(RegisterFormSchema), defaultValues: defaultValues})
     const { handleSubmit } = methods
@@ -31,7 +43,7 @@ export const RegisterPage = (props: any) => {
                         <Button onClick={handleSubmit(register)} variant="contained">Sign Up</Button>
                     </Box>
                 </FormProvider>
-                <Button onClick={() => props.onFormSwitch('login')} sx={{ marginLeft: '100px', position: 'relative', alignItems:'center', justifyContent:'center'}}>Already have an account? Login here.</Button>
+                <Link component={RouterLink} to='/login'>Already have an account? Log-in here.</Link>
             </Paper>
         </Box>
     )
@@ -45,4 +57,3 @@ export interface RegisterFormInputs {
     readonly password: string
     readonly password2: string
 }
-

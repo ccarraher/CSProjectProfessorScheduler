@@ -8,10 +8,12 @@ import { theme } from '../theme/theme'
 import { Paper, Typography } from '@mui/material'
 import { AuthContext } from '../hooks/use-auth'
 import * as React from 'react'
+import {Link} from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
 
 
 
-export const LoginPage = (props: any) => {
+export const LoginPage = () => {
     const { login } = React.useContext(AuthContext)
     const defaultValues = {username: '', password: ''}
     const methods = useForm<LoginFormInputs>({mode: 'onBlur', resolver: zodResolver(LoginFormSchema), defaultValues: defaultValues})
@@ -26,7 +28,7 @@ export const LoginPage = (props: any) => {
                         <RhfTextField name={LoginFormFieldNames.password} label="Password" muiProps={{required: true, type: 'password'}} />
                         <Button onClick={handleSubmit(login)} variant="contained">Login</Button>
                     </Box>
-                    <Button onClick={() => props.onFormSwitch('register-page')} sx={{ marginLeft: '100px', position: 'relative', alignItems:'center', justifyContent:'center'}}>Don't have an account? Sign up here.</Button>
+                    <Link component={RouterLink} to='/register'>Don't have an account? Sign up here.</Link>
                 </FormProvider>
             </Paper>
         </Box>

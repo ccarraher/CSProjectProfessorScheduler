@@ -1,8 +1,7 @@
 import { SubmitHandler } from 'react-hook-form';
 import * as React from 'react'
 import { LoginFormInputs } from '../pages/login-page';
-import { RegisterFormInputs } from '../pages/register-page'
-import { Navigate, Outlet} from "react-router-dom"
+
 
 export const useAuth = () => {
     const [user, setUser] = React.useState<User>()
@@ -19,12 +18,6 @@ export const useAuth = () => {
         setIsAuthenticated(true)
     }
 
-    const register: SubmitHandler<RegisterFormInputs> = (userCreds: RegisterFormInputs) => {
-        console.log(userCreds)
-        setIsAuthenticated(true)
-
-    }
-
     const logout = (): void => {
         setIsAuthenticated(false)
     }
@@ -36,17 +29,16 @@ export const useAuth = () => {
             .then(json => handleUserData(json))
     }, [])
 
-    return { isAuthenticated, user, login, register, logout }
+    return { isAuthenticated, user, login, logout }
 }
 
 export const AuthContext = React.createContext(null as unknown as AuthenticatedUserContextValue)
 
 export const AuthProvider = ({children}: AuthenticatedUserProviderProps): JSX.Element => {
-    const { login, register, isAuthenticated, user, logout } = useAuth()
+    const { login, isAuthenticated, user, logout } = useAuth()
 
     const value: AuthenticatedUserContextValue = {
         login,
-        register, 
         isAuthenticated,
         user,
         logout
@@ -83,7 +75,6 @@ interface Company {
 
 export interface AuthenticatedUserContextValue {
     readonly login: SubmitHandler<LoginFormInputs>
-    readonly register: SubmitHandler<RegisterFormInputs>
     readonly logout: () => void
     readonly isAuthenticated: boolean
     readonly user: User | undefined
