@@ -28,7 +28,9 @@ export const LoginPage = () => {
                         <RhfTextField name={LoginFormFieldNames.password} label="Password" muiProps={{required: true, type: 'password'}} />
                         <Button onClick={handleSubmit(login)} variant="contained">Login</Button>
                     </Box>
+                    <Typography align='center'>
                     <Link component={RouterLink} to='/register'>Don't have an account? Sign up here.</Link>
+                    </Typography>
                 </FormProvider>
             </Paper>
         </Box>

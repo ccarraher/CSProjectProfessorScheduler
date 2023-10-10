@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {useForm, FormProvider, SubmitHandler} from 'react-hook-form'
 import {zodResolver} from '@hookform/resolvers/zod'
 import { RhfTextField } from '../components/rhf-text-field'
@@ -6,10 +7,9 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box'
 import { theme } from '../theme/theme'
 import { Paper, Typography } from '@mui/material'
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import {Link} from '@mui/material'
 import { Link as RouterLink } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 
 export const RegisterPage = () => {
@@ -20,10 +20,8 @@ export const RegisterPage = () => {
             password: userCreds.password,
             firstName: userCreds.firstname,
             lastName: userCreds.lastname
-        })
-        .then(() => {
-            (navigate('/login'))    // keep getting errors when code writte is .then(navigate('/login'))
-        })
+        })  
+        { navigate('/login') }
     }
     const defaultValues = {first: '', last: '', username: '', password: '', password2: ''}
     const methods = useForm<RegisterFormInputs>({mode: 'onBlur', resolver: zodResolver(RegisterFormSchema), defaultValues: defaultValues})
@@ -43,7 +41,9 @@ export const RegisterPage = () => {
                         <Button onClick={handleSubmit(register)} variant="contained">Sign Up</Button>
                     </Box>
                 </FormProvider>
+                <Typography align='center'>
                 <Link component={RouterLink} to='/login'>Already have an account? Log-in here.</Link>
+                </Typography>
             </Paper>
         </Box>
     )
