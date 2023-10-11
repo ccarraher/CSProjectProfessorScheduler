@@ -8,6 +8,10 @@ import { theme } from '../theme/theme'
 import { Paper, Typography } from '@mui/material'
 import { AuthContext } from '../hooks/use-auth'
 import * as React from 'react'
+import {Link} from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
+
+
 
 export const LoginPage = () => {
     const { login } = React.useContext(AuthContext)
@@ -24,6 +28,9 @@ export const LoginPage = () => {
                         <RhfTextField name={LoginFormFieldNames.password} label="Password" muiProps={{required: true, type: 'password'}} />
                         <Button onClick={handleSubmit(login)} variant="contained">Login</Button>
                     </Box>
+                    <Typography align='center'>
+                    <Link component={RouterLink} to='/register'>Don't have an account? Sign up here.</Link>
+                    </Typography>
                 </FormProvider>
             </Paper>
         </Box>

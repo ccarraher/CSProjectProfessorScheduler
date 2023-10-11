@@ -2,6 +2,7 @@ import { SubmitHandler } from 'react-hook-form';
 import * as React from 'react'
 import { LoginFormInputs } from '../pages/login-page';
 
+
 export const useAuth = () => {
     const [user, setUser] = React.useState<User>()
     const [isAuthenticated, setIsAuthenticated] = React.useState(false)
