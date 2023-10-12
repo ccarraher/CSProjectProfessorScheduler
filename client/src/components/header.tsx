@@ -21,6 +21,8 @@ export const Header = () => {
         logout()
         handleClose()
     }
+
+    const name = `${user?.firstName} ${user?.lastName}`
     return (
         <AppBar position="fixed" sx={{maxHeight: HEADER_HEIGHT, gap: 4, display: 'flex', flexDirection: 'row', zIndex: (theme) => theme.zIndex.drawer + 1}} color="default">
             <Toolbar sx={{justifyContent: 'space-between', width: '100%', display: 'flex', overflow: 'hidden'}}>
@@ -30,7 +32,7 @@ export const Header = () => {
                 </Box>
                 <Button sx={{display: 'flex', gap: theme.spacing(1)}} onClick={handleClick}>
                     <Avatar />
-                    <Typography variant="body1" color="grey">{user?.name}</Typography>
+                    <Typography variant="body1" color="grey">{name}</Typography>
                     <KeyboardArrowDownIcon sx={{color: 'grey'}} />
                 </Button>
             </Toolbar>
