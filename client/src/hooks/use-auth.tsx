@@ -1,33 +1,51 @@
 import { SubmitHandler } from 'react-hook-form';
 import * as React from 'react'
 import { LoginFormInputs } from '../pages/login-page';
+import { User } from '../types/auth-types';
 
 
 export const useAuth = () => {
     const [user, setUser] = React.useState<User>()
     const [isAuthenticated, setIsAuthenticated] = React.useState(false)
 
-    const handleUserData = (data: User[]) => {
-        if (data) {
-            setUser(data[0])
-        }
-    }
-
     const login: SubmitHandler<LoginFormInputs> = (userCreds: LoginFormInputs) => {
-        console.log(userCreds)
-        setIsAuthenticated(true)
+        const body = {
+            username: userCreds.username,
+            password: userCreds.password
+        }
+        fetch('http://localhost:8080/auth/login', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body)
+        }).then(res => res.json())
+        .then(data => {
+            if (data) {
+                if (data.userId) {
+                    const user: User = {
+                        firstName: data.firstName,
+                        lastName: data.lastName,
+                        id: data.userId,
+                        role: {
+                            roleId: data.authorities[0].roleId,
+                            type: data.authorities[0].authority
+                        },
+                        authToken: data.jwt
+                    }
+                    setUser(user)
+                    setIsAuthenticated(true)
+                }
+            } else {
+                setIsAuthenticated(false)
+            }
+        }).catch(() => setIsAuthenticated(false))
     }
 
     const logout = (): void => {
+        setUser(undefined)
         setIsAuthenticated(false)
     }
-
-    React.useEffect(() => {
-        // API call to current user here?
-        fetch('https://jsonplaceholder.typicode.com/users?id=1')
-            .then(res => res.json())
-            .then(json => handleUserData(json))
-    }, [])
 
     return { isAuthenticated, user, login, logout }
 }
@@ -47,30 +65,6 @@ export const AuthProvider = ({children}: AuthenticatedUserProviderProps): JSX.El
     return <AuthContext.Provider value={value}>
         {children}
     </AuthContext.Provider>
-}
-
-interface User {
-    readonly id: number
-    readonly name: string
-    readonly username: string
-    readonly email: string
-    readonly address: Address
-    readonly phone: string
-    readonly company: Company 
-}
-
-interface Address {
-    readonly street: string
-    readonly suite: string
-    readonly city: string
-    readonly zipCode: string
-    readonly geo: Pick<GeolocationCoordinates, 'latitude' |  'longitude'>
-}
-
-interface Company {
-    readonly name: string
-    readonly catchPhrase: string
-    readonly bs: string
 }
 
 export interface AuthenticatedUserContextValue {

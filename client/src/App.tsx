@@ -1,5 +1,5 @@
-import { Box } from '@mui/material'
 import { Providers } from './providers/providers'
+import { Box } from '@mui/material'
 import { BaseRouter } from './routing/base-router'
 
 function App() {
