@@ -1,10 +1,10 @@
 package base.models;
 
-public class LoginRequestDTO {
+public class LoginRequestDto {
     private String username;
     private String password;
 
-    public LoginRequestDTO(String username, String password) {
+    public LoginRequestDto(String username, String password) {
         super();
         this.username = username;
         this.password = password;

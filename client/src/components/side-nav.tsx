@@ -12,7 +12,7 @@ export const SideNav = () => {
             {sideNavChoices.map((x, idx) => {
                 const isSelected = selected === idx
                 return (
-                    <ListItem disablePadding onClick={() => setSelected(idx)}>
+                    <ListItem disablePadding onClick={() => setSelected(idx)} key={idx}>
                         <ListItemButton selected={isSelected}>
                             <ListItemIcon>
                                 <Icon name={x.icon} />
