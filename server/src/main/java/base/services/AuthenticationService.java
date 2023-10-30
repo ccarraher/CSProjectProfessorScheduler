@@ -52,9 +52,9 @@ public class AuthenticationService {
             String token = tokenService.generateJwt(auth);
             User user = userRepository.findByUsername(username).get();
 
-            return new LoginResponseDto(user.getUserId(), user.getFirstName(), user.getLastName(), user.getAuthorities(), token);
+            return new LoginResponseDto(user.getUserId(), user.getFirstName(), user.getLastName(), user.getAuthorities(), token, user.getUsername());
         } catch (AuthenticationException e) {
-            return new LoginResponseDto(null, null, null, null, "");
+            return new LoginResponseDto(null, null, null, null, "", null);
         }
     }
 }

@@ -11,17 +11,15 @@ public class LoginResponseDto {
     private String lastName;
     private Collection<? extends GrantedAuthority> authorities;
     private String jwt;
+    private String netId;
 
-    public LoginResponseDto() {
-        super();
-    }
-
-    public LoginResponseDto(Integer userId, String firstName, String lastName, Collection<? extends GrantedAuthority> authorities, String jwt) {
+    public LoginResponseDto(Integer userId, String firstName, String lastName, Collection<? extends GrantedAuthority> authorities, String jwt, String netId) {
         this.userId = userId;
         this.firstName = firstName;
         this.lastName = lastName;
         this.authorities = authorities;
         this.jwt = jwt;
+        this.netId = netId;
     }
 
     public Integer getUserId() {
@@ -60,5 +58,13 @@ public class LoginResponseDto {
 
     public void setJwt(String jwt) {
         this.jwt = jwt;
+    }
+
+    public String getNetId() {
+        return netId;
+    }
+
+    public void setNetId(String netId) {
+        this.netId = netId;
     }
 }
