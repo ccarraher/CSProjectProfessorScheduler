@@ -37,7 +37,7 @@ public class CsProfessorSchedulerServerApplication {
 			Set<Role> roles = new HashSet<>();
 			roles.add(adminRole);
 
-			User admin = new User(1, "admin", passwordEncoder.encode("password"), roles, "App", "Admin");
+			User admin = new User("admin", passwordEncoder.encode("password"), roles, "App", "Admin", "Admin");
 
 			userRepository.save(admin);
 		};

@@ -42,7 +42,7 @@ public class AuthenticationService {
 
         authorities.add(userRole);
 
-        return userRepository.save(new User(0, username, encodedPassword, authorities, firstName, lastName));
+        return userRepository.save(new User(username, encodedPassword, authorities, firstName, lastName, "Instructor"));
     }
 
     public LoginResponseDto login(String username, String password) {
@@ -52,7 +52,7 @@ public class AuthenticationService {
             String token = tokenService.generateJwt(auth);
             User user = userRepository.findByUsername(username).get();
 
-            return new LoginResponseDto(user.getUserId(), user.getFirstName(), user.getLastName(), user.getAuthorities(), token);
+            return new LoginResponseDto(user.getUsername(), user.getFirstName(), user.getLastName(), user.getAuthorities(), token);
         } catch (AuthenticationException e) {
             return new LoginResponseDto(null, null, null, null, "");
         }
