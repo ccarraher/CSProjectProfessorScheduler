@@ -2,11 +2,13 @@ import { SubmitHandler } from 'react-hook-form';
 import * as React from 'react'
 import { LoginFormInputs } from '../pages/login-page';
 import { User } from '../types/auth-types';
+import { useNavigate } from 'react-router-dom';
 
 
 export const useAuth = () => {
     const [user, setUser] = React.useState<User>()
     const [isAuthenticated, setIsAuthenticated] = React.useState(false)
+    const navigate = useNavigate()
 
     const login: SubmitHandler<LoginFormInputs> = (userCreds: LoginFormInputs) => {
         const body = {
@@ -31,10 +33,12 @@ export const useAuth = () => {
                             roleId: data.authorities[0].roleId,
                             type: data.authorities[0].authority
                         },
-                        authToken: data.jwt
+                        authToken: data.jwt,
+                        netId: data.netId
                     }
                     setUser(user)
                     setIsAuthenticated(true)
+                    navigate('/home')
                 }
             } else {
                 setIsAuthenticated(false)

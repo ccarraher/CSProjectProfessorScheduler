@@ -10,6 +10,8 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,9 +29,13 @@ public class TokenService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
 
+        ArrayList<String> audience = new ArrayList<String>();
+        audience.add("http://localhost:8080");
+
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
+                .audience(audience)
                 .subject(auth.getName())
                 .claim("roles", scope)
                 .build();

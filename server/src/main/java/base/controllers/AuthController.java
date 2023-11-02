@@ -1,6 +1,6 @@
 package base.controllers;
 
-import base.models.LoginRequestDTO;
+import base.models.LoginRequestDto;
 import base.models.LoginResponseDto;
 import base.models.RegistrationRequestDto;
 import base.models.User;
@@ -21,7 +21,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public LoginResponseDto login(@RequestBody LoginRequestDTO body) {
+    public LoginResponseDto login(@RequestBody LoginRequestDto body) {
         return authenticationService.login(body.getUsername(), body.getPassword());
     }
 }
