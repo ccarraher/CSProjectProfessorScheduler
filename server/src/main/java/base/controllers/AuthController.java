@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/auth")        // https://localhost:8080/auth/register
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class AuthController {
     @Autowired

@@ -6,15 +6,19 @@ import java.util.Collection;
 import java.util.Set;
 
 public class LoginResponseDto {
-    private Integer userId;
+    private String NetID;
     private String firstName;
     private String lastName;
     private Collection<? extends GrantedAuthority> authorities;
     private String jwt;
     private String netId;
 
-    public LoginResponseDto(Integer userId, String firstName, String lastName, Collection<? extends GrantedAuthority> authorities, String jwt, String netId) {
-        this.userId = userId;
+    public LoginResponseDto() {
+        super();
+    }
+
+    public LoginResponseDto(String NetID, String firstName, String lastName, Collection<? extends GrantedAuthority> authorities, String jwt) {
+        this.NetID = NetID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.authorities = authorities;
@@ -22,12 +26,12 @@ public class LoginResponseDto {
         this.netId = netId;
     }
 
-    public Integer getUserId() {
-        return this.userId;
+    public String getUserId() {
+        return this.NetID;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setUserId(String NetID) {
+        this.NetID = NetID;
     }
 
     public String getFirstName() {return this.firstName;}

@@ -40,39 +40,40 @@ export const HomePage = () => {
     });
     return calendarDays;
   };
-
-  const fetchPreviousSemester = async () => {
-    if (user?.authToken) {
-      const body = {
-        netId: "mrazora", // Replace with user?.netId when stuff is set up properly
-      };
-      const requestHeaders: HeadersInit = new Headers();
-      requestHeaders.set("Content-Type", "application/json");
-      requestHeaders.set("Authorization", `Bearer ${user.authToken}`);
-      const response = await fetch(
-        "http://127.0.0.1:8080/schedule/previousSemesterSchedule",
-        {
-          method: "POST",
-          body: JSON.stringify(body),
-          headers: requestHeaders,
-        }
-      );
-      const jsonResponse = await response.json();
-      const previousSemesterScheduleData: ClassDetails[] =
-        jsonResponse.previousSemesterSchedule;
-      if (previousSemesterScheduleData) {
-        const calendarDays = convertToCalendarForm(
-          previousSemesterScheduleData
-        );
-        setSemesterDates(calendarDays);
-        setPreviousSemester(previousSemesterScheduleData);
-      }
-    }
-  };
+  let didInit = false;
 
   React.useEffect(() => {
-    fetchPreviousSemester();
-  }, [user?.authToken]);
+    if (user && user.authToken && !didInit) {
+      didInit = true;
+      const fetchPreviousSemester = async () => {
+        const body = {
+          netId: "mrazora", // Replace with user?.netId when stuff is set up properly
+        };
+        const requestHeaders: HeadersInit = new Headers();
+        requestHeaders.set("Content-Type", "application/json");
+        requestHeaders.set("Authorization", `Bearer ${user.authToken}`);
+        const response = await fetch(
+          "http://127.0.0.1:8080/schedule/previousSemesterSchedule",
+          {
+            method: "POST",
+            body: JSON.stringify(body),
+            headers: requestHeaders,
+          }
+        );
+        const jsonResponse = await response.json();
+        const previousSemesterScheduleData: ClassDetails[] =
+          jsonResponse.previousSemesterSchedule;
+        if (previousSemesterScheduleData) {
+          const calendarDays = convertToCalendarForm(
+            previousSemesterScheduleData
+          );
+          setSemesterDates(calendarDays);
+          setPreviousSemester(previousSemesterScheduleData);
+        }
+      };
+      fetchPreviousSemester();
+    }
+  }, [user, user?.authToken]);
 
   const events = semesterDates
     .map((course) => {

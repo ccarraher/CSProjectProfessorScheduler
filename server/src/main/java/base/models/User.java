@@ -8,20 +8,22 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 @Entity
-@Table(name="users")
+@Table(name="user")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "userId")
-    private Integer userId;
-    @Column(unique = true)
+    @Column(name = "NetID", unique = true, nullable = false)
     private String username;
-    private String password;
+    @Column(name = "Authorization")
+    private String authorization;
+    @Column(name = "FirstName")
     private String firstName;
+    @Column(name = "LastName")
     private String lastName;
+    @Column(name = "UserType")
+    private String userType;
 
     @ManyToMany(fetch = FetchType.EAGER)    // Tells db we want to fetch authorities as soon as we fetch the data for the user
-    @JoinTable(name = "user_role_junction", joinColumns = {@JoinColumn(name = "userId")}, inverseJoinColumns = {@JoinColumn(name = "roleId")})
+    @JoinTable(name = "user_role_junction", joinColumns = {@JoinColumn(name = "NetID")}, inverseJoinColumns = {@JoinColumn(name = "role_id")})
     private Set<Role> authorities;
 
     public User() {
@@ -29,22 +31,14 @@ public class User implements UserDetails {
         this.authorities = new HashSet<Role>();
     }
 
-    public User(Integer userId, String username, String password, Set<Role> authorities, String firstName, String lastName) {
+    public User(String netID, String Authorization, Set<Role> authorities, String firstName, String lastName, String userType) {
         super();
-        this.userId = userId;
-        this.username = username;
-        this.password = password;
+        this.username = netID;
+        this.authorization = Authorization;
         this.authorities = authorities;
         this.firstName = firstName;
         this.lastName = lastName;
-    }
-
-    public Integer getUserId() {
-        return this.userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+        this.userType = userType;
     }
 
     @Override
@@ -58,11 +52,11 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return this.password;
+        return this.authorization;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String Authorization) {
+        this.authorization = Authorization;
     }
 
     @Override
@@ -70,8 +64,8 @@ public class User implements UserDetails {
         return this.username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUsername(String NetID) {
+        this.username = NetID;
     }
 
     @Override
@@ -98,15 +92,15 @@ public class User implements UserDetails {
         return this.firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFirstName(String FirstName) {
+        this.firstName = FirstName;
     }
 
     public String getLastName() {
         return this.lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setLastName(String LastName) {
+        this.lastName = LastName;
     }
 }
