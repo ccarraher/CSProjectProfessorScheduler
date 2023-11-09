@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import base.CsProfessorSchedulerServerApplication; //added
 
-@SpringBootTest(classes = CsProfessorSchedulerServerApplication.class) //() added within parenthesis
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = CsProfessorSchedulerServerApplication.class)
 public class CsProfessorSchedulerServerApplicationTests {
 
 	@Test
