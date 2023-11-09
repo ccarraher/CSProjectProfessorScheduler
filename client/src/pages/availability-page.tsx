@@ -11,7 +11,7 @@ export const AvailabilityPage = () => {
   return (
     <Box component={'form'} sx={{ display: "flex", flexDirection: "column", width: "100%" }}> {}
       <Toolbar />
-      <Box sx={{ flexGrow: 1, p: 3}}> {/* Ensure minimum width is set to prevent squishing */}
+      <Box sx={{ flexGrow: 1, p: 3,overflow: 'auto'}}> {/* Ensure minimum width is set to prevent squishing */}
         <AvailabilityInput onAvailabilitySubmit={handleAvailabilitySubmit} />
       </Box>
     </Box>
