@@ -46,7 +46,9 @@ export const CourseSelectionPage: React.FC = () => {
   };
 
   const handleAddCourse = (courseId: number) => {
-    setSelectedCourses([...selectedCourses, courseId]);
+    if (selectedCourses.length < 5) {
+      setSelectedCourses([...selectedCourses, courseId]);
+    }
   };
  
 
@@ -92,7 +94,7 @@ export const CourseSelectionPage: React.FC = () => {
       {selectedCourses.map((selectedCourse, index: number) => (
         <Box key={index} mt={3}>
           <FormControl fullWidth sx={{ padding: '8px' }}>
-            <InputLabel>Select a course</InputLabel>
+            <InputLabel>Course {index + 1}</InputLabel>
             <Select
               value={selectedCourse}  
               onChange={(e) => handleCourseChange(index, e.target.value as number)}
