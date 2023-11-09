@@ -54,5 +54,11 @@ const sideNavChoices = [
         icon: 'Schedule', 
         path: './availability', 
     },
+    {
+        text: 'Preferences',
+        icon: 'Schedule', 
+        path: './preference', 
+    },
+    
     // ... other choices
 ];
