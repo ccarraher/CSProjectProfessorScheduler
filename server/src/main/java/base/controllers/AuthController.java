@@ -6,6 +6,7 @@ import base.models.RegistrationRequestDto;
 import base.models.User;
 import base.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,5 +24,9 @@ public class AuthController {
     @PostMapping("/login")
     public LoginResponseDto login(@RequestBody LoginRequestDto body) {
         return authenticationService.login(body.getUsername(), body.getPassword());
+    }
+    @GetMapping("/user")
+    public Authentication getUser(Authentication authentication) {
+        return authentication;
     }
 }
