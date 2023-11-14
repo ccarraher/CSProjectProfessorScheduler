@@ -1,72 +1,77 @@
 import React, { useState } from 'react';
 import { Box, Button, Checkbox, FormControlLabel, Typography } from '@mui/material';
+import moment from "moment";
 
 const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
-
-interface AvailabilityInputProps {
-  onAvailabilitySubmit: (availability: { [day: string]: { periods: { startHour: string; endHour: string }[] } }) => void;
-}
-const icon = <Box sx={{ width: 70, height:40.5, backgroundColor: 'white', border: '.05px solid black', margin:'0px', padding:'0px'}} />;
-
-// Custom icon for checked state
-const checkedIcon = <Box sx={{ width: 70, height:40.5, backgroundColor: '#646cff', border: '.05px solid black' , margin:'0px',padding:'0px'}} />;
-
-
-const AvailabilityInput: React.FC<AvailabilityInputProps> = ({ onAvailabilitySubmit }) => {
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const allHours = [
-    '7:00 am - 7:30 am',
-  '7:30 am - 8:00 am',
-  '8:00 am - 8:30 am',
-  '8:30 am - 9:00 am',
-  '9:00 am - 9:30 am',
-  '9:30 am - 10:00 am',
-  '10:00 am - 10:30 am',
-  '10:30 am - 11:00 am',
-  '11:00 am - 11:30 am',
-  '11:30 am - 12:00 pm',
-  '12:00 pm - 12:30 pm',
-  '12:30 pm - 1:00 pm',
-  '1:00 pm - 1:30 pm',
-  '1:30 pm - 2:00 pm',
-  '2:00 pm - 2:30 pm',
-  '2:30 pm - 3:00 pm',
-  '3:00 pm - 3:30 pm',
-  '3:30 pm - 4:00 pm',
-  '4:00 pm - 4:30 pm',
-  '4:30 pm - 5:00 pm',
-  '5:00 pm - 5:30 pm',
-  '5:30 pm - 6:00 pm',
-  '6:00 pm - 6:30 pm',
-  '6:30 pm - 7:00 pm',
-  '7:00 pm - 7:30 pm',
-  '7:30 pm - 8:00 pm',
-  '8:00 pm - 8:30 pm',
-  '8:30 pm - 9:00 pm',
-  '9:00 pm - 9:30 pm',
-  '9:30 pm - 10:00 pm',
-
+    "8:00am - 8:30am",
+    "8:30am - 10:00am",
+    "10:00am - 11:30am",
+    "11:30am - 1:00pm",
+    "1:00pm - 2:30pm",
+    "2:30pm - 4:00pm",
+    "4:00pm - 5:30pm",
+    "5:30pm - 7:00pm",
+    "7:00pm - 8:30pm",
+    "8:30pm - 10:00pm"
   ];
+  const icon = <Box sx={{ width: 70, height:40.5, backgroundColor: 'white', border: '.05px solid black', margin:'0px', padding:'0px'}} />;
+  const checkedIcon = <Box sx={{ width: 70, height:40.5, backgroundColor: '#646cff', border: '.05px solid black' , margin:'0px',padding:'0px'}} />;
 
-  const handleDayChange = (day: string) => {
-    if (selectedDays.includes(day)) {
-      setSelectedDays(selectedDays.filter((d) => d !== day));
-    } else {
-      setSelectedDays([...selectedDays, day]);
-    }
-  };
-
-  const isDaySelected = (day: string) => selectedDays.includes(day);
-
-  const handleSubmit = () => {
-    const availability: { [day: string]: { periods: { startHour: string; endHour: string }[] } } = {};
-
-    selectedDays.forEach((day) => {
-      availability[day] = { periods: [] };
+  interface AvailabilityInputProps {
+    onAvailabilitySubmit: (availability: { [day: string]: string[] }) => void;
+  }  
+  
+  const AvailabilityInput: React.FC<AvailabilityInputProps> = ({ onAvailabilitySubmit }) => {
+    const [selectedTimeSlots, setSelectedTimeSlots] = useState<{ [day: string]: string[] }>({
+      Mon: [],
+      Tue: [],
+      Wed: [],
+      Thu: [],
+      Fri: []
     });
-
-    onAvailabilitySubmit(availability);
-  };
+  
+    const handleTimeSlotChange = (day: string, timeSlot: string, isChecked: boolean) => {
+      setSelectedTimeSlots(prevSlots => {
+        const updatedSlots = { ...prevSlots };
+  
+        if (isChecked) {
+          // Add the time slot if it's selected
+          updatedSlots[day] = [...updatedSlots[day], timeSlot];
+        } else {
+          // Remove the time slot if it's deselected
+          updatedSlots[day] = updatedSlots[day].filter(slot => slot !== timeSlot);
+        }
+  
+        return updatedSlots;
+      });
+    };
+  
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault(); // Prevent default form submission behavior
+      const splitTimeSlot = (timeSlot: string) => {
+        const times = timeSlot.match(/\d+:\d+\w+/g);
+        if (!times || times.length !== 2) return [];
+    
+        const [start, end] = times.map(t => moment(t, "h:mma"));
+        const intervals = [];
+    
+        while (start < end) {
+          const newStart = moment(start);
+          intervals.push(`${newStart.format("h:mma")} - ${start.add(30, 'minutes').format("h:mma")}`);
+        }
+    
+        return intervals;
+      };
+    
+      const availability: { [day: string]: string[] } = {};
+    
+      Object.entries(selectedTimeSlots).forEach(([day, slots]) => {
+        availability[day] = slots.flatMap(slot => splitTimeSlot(slot));
+      });
+    
+      onAvailabilitySubmit(availability);
+    };
 
   return (
    
@@ -108,16 +113,8 @@ const AvailabilityInput: React.FC<AvailabilityInputProps> = ({ onAvailabilitySub
               Enter your availability below.
             </Typography>
           </Box>
-          <Box
-            className="formTitleBox"
-            sx={{
-              display: 'flex',
-              justifyContent: 'center'
-            }}
-          >
-            <Typography
-              variant="subtitle1"
-              className="note"
+          <Box className="formTitleBox"sx={{display: 'flex',justifyContent: 'center'}}>
+            <Typography variant="subtitle1"className="note"
               sx={{
                 width: 'fit-content',
                 height: 'fit-content',
@@ -178,7 +175,7 @@ const AvailabilityInput: React.FC<AvailabilityInputProps> = ({ onAvailabilitySub
               }}>
             
               {allHours.map((hour) => (
-              <Box key={hour} className="hour" sx={{color:'black', padding:'9.5px', width:"150px"}}>{hour}</Box>
+              <Box key={hour} className="hour" sx={{textAlign:"center",color:'black', paddingLeft:'5px',paddingRight:'5px', width:"160px", height:40.5, border: '.05px solid black',}}>{hour}</Box>
               ))}
             </Box> 
 
@@ -193,6 +190,8 @@ const AvailabilityInput: React.FC<AvailabilityInputProps> = ({ onAvailabilitySub
           <Checkbox
           icon={icon}
           checkedIcon={checkedIcon}
+          checked={selectedTimeSlots[day].includes(hour)}
+          onChange={(e) => handleTimeSlotChange(day, hour, e.target.checked)}
           sx={{
             padding: 0, 
             margin: 0, 
@@ -229,8 +228,7 @@ const AvailabilityInput: React.FC<AvailabilityInputProps> = ({ onAvailabilitySub
             </Box>
           </Box>
                   </Box>
-                //</Box>
-              //</Box>
+               
   
   );
   

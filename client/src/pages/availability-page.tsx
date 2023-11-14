@@ -1,17 +1,15 @@
-import React from 'react';
-import { Box, Toolbar, Container } from "@mui/material";
+import { Box, Toolbar} from "@mui/material";
 import AvailabilityInput from './AvailabilityInput';
 
 export const AvailabilityPage = () => {
-  const handleAvailabilitySubmit = (availability: { [day: string]: { periods: { startHour: string; endHour: string }[] } }) => {
-    // Handle submission of the availability data
-    console.log(availability); // For now, we'll just log it to the console
+  const handleAvailabilitySubmit = (availability: { [day: string]: string[] }) => {  
+    console.log(availability); 
   };
 
   return (
-    <Box component={'form'} sx={{ display: "flex", flexDirection: "column", width: "100%" }}> {}
+    <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}> {}
       <Toolbar />
-      <Box sx={{ flexGrow: 1, p: 3,overflow: 'auto'}}> {/* Ensure minimum width is set to prevent squishing */}
+      <Box sx={{ flexGrow: 1, p: 3,overflow: 'auto'}}> {}
         <AvailabilityInput onAvailabilitySubmit={handleAvailabilitySubmit} />
       </Box>
     </Box>
