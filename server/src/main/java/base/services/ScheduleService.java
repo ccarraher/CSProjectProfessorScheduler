@@ -1,36 +1,45 @@
 package base.services;
 
-import base.models.CourseDetail;
-import base.models.CoursePreference;
-import base.models.PreviousSemesterScheduleResponseDto;
+import base.models.*;
 import base.repositories.AvailabilityRepository;
 import base.repositories.CoursePreferenceRepository;
+import base.repositories.CourseRepository;
+import base.repositories.PreviousSemesterScheduleRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
 public class ScheduleService {
     @Autowired
-    private AvailabilityRepository availabilityRepository;
+    private PreviousSemesterScheduleRepository previousSemesterScheduleRepository;
 
     @Autowired
-    private CoursePreferenceRepository coursePreferenceRepository;
-
+    private CourseRepository courseRepository;
     public PreviousSemesterScheduleResponseDto getPreviousSemesterSchedule(String netId) {
-        List<CoursePreference> coursePreferences = coursePreferenceRepository.findCoursePreferencesByNetId(netId);
-        coursePreferences.forEach(coursePreference -> System.out.println(coursePreference.toString()));
-        CourseDetail[] courseDetails = {
-                new CourseDetail("CS 1337.001", "Computer Science I", LocalTime.of(11, 30), LocalTime.of(12, 45), new String[] {"Tuesday", "Thursday"}, "Chris Davis", "cid021000"),
-                new CourseDetail("CS 1325.001", "Introduction to Programming", LocalTime.of(8, 30), LocalTime.of(9, 45), new String[] {"Tuesday", "Thursday"}, "Miguel Razo Razo", "mrazora"),
-                new CourseDetail("CS 1325.002", "Introduction to Programming", LocalTime.of(16, 0), LocalTime.of(17, 15), new String[] {"Monday", "Wednesday"}, "Miguel Razo Razo", "mrazora"),
-                new CourseDetail("CS 1325.003", "Introduction to Programming", LocalTime.of(14, 30), LocalTime.of(15, 45), new String[] {"Tuesday", "Thursday"}, "Miguel Razo Razo", "mrazora")
-        };
-        CourseDetail[] filteredByNetId = Arrays.stream(courseDetails).filter(x -> Objects.equals(x.getNetId(), netId)).toArray(CourseDetail[]::new);
-        PreviousSemesterScheduleResponseDto response = new PreviousSemesterScheduleResponseDto(filteredByNetId);
+        List<PreviousSemesterSchedule> previousSemesterSchedule = previousSemesterScheduleRepository.findPreviousSemesterByNetId(netId);
+        CourseDetail[] courseDetails = previousSemesterSchedule.stream().map(x -> {
+            Course course = courseRepository.findById(x.getCourseId()).get();
+            String classNumber = course.getPrefix() + " " + course.getCourseNumber() + "." + x.getSectionNumber();
+            String[] timeParts = x.getTime().split(" - ");
+            LocalTime startTime = parseTime(timeParts[0].replace("am", "AM").replace("pm", "PM"));
+            LocalTime endTime = parseTime(timeParts[1].replace("am", "AM").replace("pm", "PM"));
+
+            return new CourseDetail(classNumber, course.getCourseName(), startTime, endTime, x.getDays().split(", "), netId);
+        }).toArray(CourseDetail[]::new);
+        PreviousSemesterScheduleResponseDto response = new PreviousSemesterScheduleResponseDto(courseDetails);
         return response;
+    }
+
+    private static LocalTime parseTime(String time) {
+        // Create a formatter for parsing time with am/pm
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mma", Locale.ENGLISH);
+
+        // Parse the time string
+        return LocalTime.parse(time, formatter);
     }
 }

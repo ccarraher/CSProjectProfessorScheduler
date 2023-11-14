@@ -8,16 +8,14 @@ public class CourseDetail {
     private LocalTime startTime;
     private LocalTime endTime;
     private String[] days;
-    private String professorName;
     private String netId;
 
-    public CourseDetail(String classNumber, String className, LocalTime startTime, LocalTime endTime, String[] days, String professorName, String netId) {
+    public CourseDetail(String classNumber, String className, LocalTime startTime, LocalTime endTime, String[] days, String netId) {
         this.classNumber = classNumber;
         this.className = className;
         this.startTime = startTime;
         this.endTime = endTime;
         this.days = days;
-        this.professorName = professorName;
         this.netId = netId;
     }
 
@@ -59,14 +57,6 @@ public class CourseDetail {
 
     public void setDays(String[] days) {
         this.days = days;
-    }
-
-    public String getProfessorName() {
-        return professorName;
-    }
-
-    public void setProfessorName(String professorName) {
-        this.professorName = professorName;
     }
 
     public String getNetId() {
