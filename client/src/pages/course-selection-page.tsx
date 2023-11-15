@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Typography, Box, Button, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { AuthContext } from '../hooks/use-auth';
 
 export const CourseSelectionPage: React.FC = () => {
+  const { user } = React.useContext(AuthContext);
   const [selectedCourses, setSelectedCourses] = useState<number[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
-  const [NetID, setNetID] = useState<string>('');
+  const [netId, setNetID] = useState<string>('');
+  const [notification, setNotification] = useState<string | null> (null);
 
   type Course = {
     courseId: number;
@@ -18,25 +21,35 @@ export const CourseSelectionPage: React.FC = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await fetch('http://localhost:8080/course/get-courses', {
-          headers: {
-            Authorization: `Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiYWRtaW4iLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjgwODAiLCJpYXQiOjE2OTk1NjIyMTQsInJvbGVzIjoiVVNFUiJ9.LJpLX7fgOmKnMFffaZZAUDJFRyfZ6zBmP6N5TmppkuQa6arGwiS_KG1bsm9PmQdAsKvmhWaZbRejREvsgLvkzdhvmi2-bMfA3HclExpUtJepDSP61GWbNk7u1ZfYXey6RwqhydbAfEtzoL3Wnd1L7JWcqJU43bZwVmr3duVDZ0VB2_y23LD89IG9g8B8EIPCEA6zux9H4jWyD-4a0nj3tGpQU1_H8xcYUua1us9PzGTRQ7J9NflLnYy5CwmxYtMooa6Wv6HoRFNXbJQsfizttmx87ht6WAKLj2S3IOu21hcrerNBOlgsz9xCsZN0afn5Q_Cp6aFuUnAMEh4gbLHONA`,
-          },
-        });
-        const data = await response.json();
+        if (user) {
+        const requestHeaders: HeadersInit = new Headers();
+        requestHeaders.set("Content-Type", "application/json");
+        requestHeaders.set("Authorization", `Bearer ${user.authToken}`);
 
-        console.log('Data from backend:', data); // testing...
-
-        setCourses(data);
-
-        setSelectedCourses([0]);
+          const response = await fetch('http://localhost:8080/course/get-courses', {
+            method: 'GET',
+            headers: requestHeaders
+          });
+          const data = await response.json();
+  
+          console.log('Data from backend:', data); // testing...
+  
+          setCourses(data);
+          setSelectedCourses([0]);
+        }
       } catch (error) {
         console.error('Error fetching courses:', error);
       }
     };
   
     fetchCourses();
-  }, []);
+  }, [user, user?.authToken]);
+
+  useEffect(() => {
+    if (user && user.authToken && !netId && user.id) { 
+      setNetID(user.id.toString());
+    }
+  }, [user, netId]);
   
 
   const handleCourseChange = (index: number, courseId: number) => {
@@ -59,9 +72,13 @@ export const CourseSelectionPage: React.FC = () => {
       return;
     }
 
-    savePreferences(NetID, selectedCourses)
+    savePreferences(netId, selectedCourses)
       .then((response) => {
         console.log('Preferences saved successfully:', response);
+        setNotification('Preferences were successfully saved');
+        setTimeout(() => {
+          setNotification(null);
+        }, 5000);
       })
       .catch((error: Error) => {
         console.error('Failed to save preferences:', error.message);
@@ -69,20 +86,24 @@ export const CourseSelectionPage: React.FC = () => {
   };
 
   const savePreferences = async (netID: string, selectedCourses: number[]): Promise<any> => {
-    const response = await fetch('http://localhost:8080/availability', {
+    
+    if (user){
+    const requestHeaders: HeadersInit = new Headers();
+    requestHeaders.set("Content-Type", "application/json");
+    requestHeaders.set("Authorization", `Bearer ${user.authToken}`);
+
+    const response = await fetch('http://localhost:8080/course/submit-preferences', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ netID, selectedCourses }),
+      headers: requestHeaders,
+      body: JSON.stringify({ netId, selectedCourses }),
     });
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    return response.json();
-  };
+  }};
+  console.log('NetID: ', netId)
   console.log('Courses Data:', courses);
   console.log('Selected Courses:', selectedCourses);
 
@@ -115,6 +136,11 @@ export const CourseSelectionPage: React.FC = () => {
       <Button variant="contained" color="primary" onClick={handleSavePreferences} style={{ marginTop: '1rem', marginLeft: '1rem' }}>
         Save Preferences
       </Button>
+      {notification && (
+      <Typography variant="body1" style={{ color: 'green', marginLeft: '1rem'}}>
+        {notification}
+      </Typography>
+    )}
     </Box>
   );  
 };

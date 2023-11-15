@@ -19,13 +19,5 @@ public class AvailabilityController {
     public AvailabilityController(AvailabilityService availabilityService) {
         this.availabilityService = availabilityService;
     }
-
-
-    // will be updating this soon
-    // @PostMapping("/save-preferences")
-   // public ResponseEntity<String> savePreferences(@RequestBody List<Long> courseIds) {
-    //    String responseMessage = availabilityService.savePreferences(courseIds);
-
-    //    return new ResponseEntity<>(responseMessage, HttpStatus.OK);
-   // }
 }
+
