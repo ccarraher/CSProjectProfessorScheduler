@@ -21,8 +21,6 @@ public class CoursePreferenceService {
             CoursePreference coursePreference = new CoursePreference();
             coursePreference.setNetId(netId);
             coursePreference.setCourseId(courseId);
-            // set CoursePreferenceId if not auto-generated
-            // coursePreference.setCoursePreferenceId(...);
             coursePreferenceRepository.save(coursePreference);
         }
     }
