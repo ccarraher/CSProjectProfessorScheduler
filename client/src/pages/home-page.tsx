@@ -47,7 +47,7 @@ export const HomePage = () => {
       didInit = true;
       const fetchPreviousSemester = async () => {
         const body = {
-          netId: user.id,
+          netId: user.netId,
         };
         const requestHeaders: HeadersInit = new Headers();
         requestHeaders.set("Content-Type", "application/json");
