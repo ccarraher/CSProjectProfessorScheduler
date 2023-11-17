@@ -3,7 +3,7 @@ package base.controllers;
 import base.models.LoginRequestDto;
 import base.models.LoginResponseDto;
 import base.models.RegistrationRequestDto;
-import base.models.User;
+import base.entities.User;
 import base.services.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

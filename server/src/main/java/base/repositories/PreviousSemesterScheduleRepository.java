@@ -1,7 +1,6 @@
 package base.repositories;
 
-import base.models.CoursePreference;
-import base.models.PreviousSemesterSchedule;
+import base.entities.PreviousSemesterSchedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -2,7 +2,7 @@ package base.models;
 
 import java.time.LocalTime;
 
-public class CourseDetail {
+public class CourseDetailDto {
     private String classNumber;
     private String className;
     private LocalTime startTime;
@@ -10,7 +10,7 @@ public class CourseDetail {
     private String[] days;
     private String netId;
 
-    public CourseDetail(String classNumber, String className, LocalTime startTime, LocalTime endTime, String[] days, String netId) {
+    public CourseDetailDto(String classNumber, String className, LocalTime startTime, LocalTime endTime, String[] days, String netId) {
         this.classNumber = classNumber;
         this.className = className;
         this.startTime = startTime;

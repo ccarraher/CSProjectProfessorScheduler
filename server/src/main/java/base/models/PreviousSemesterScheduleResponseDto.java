@@ -1,17 +1,17 @@
 package base.models;
 
 public class PreviousSemesterScheduleResponseDto {
-    private CourseDetail[] previousSemesterSchedule;
+    private CourseDetailDto[] previousSemesterSchedule;
 
-    public PreviousSemesterScheduleResponseDto(CourseDetail[] previousSemesterSchedule) {
+    public PreviousSemesterScheduleResponseDto(CourseDetailDto[] previousSemesterSchedule) {
         this.previousSemesterSchedule = previousSemesterSchedule;
     }
 
-    public CourseDetail[] getPreviousSemesterSchedule() {
+    public CourseDetailDto[] getPreviousSemesterSchedule() {
         return this.previousSemesterSchedule;
     }
 
-    public void setPreviousSemesterSchedule(CourseDetail[] previousSemesterSchedule) {
+    public void setPreviousSemesterSchedule(CourseDetailDto[] previousSemesterSchedule) {
         this.previousSemesterSchedule = previousSemesterSchedule;
     }
 }

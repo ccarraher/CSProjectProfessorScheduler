@@ -1,5 +1,6 @@
-package base.models;
+package base.entities;
 
+import base.entities.Role;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
