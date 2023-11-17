@@ -1,15 +1,16 @@
 package base.controllers;
 
-import base.models.Course;
-import base.models.CoursePreference;
+import base.entities.Course;
+import base.models.DeleteCoursePreferenceRequestDto;
+import base.models.GetCoursePreferencesRequestDto;
 import base.models.PreferencesRequestDto;
 import base.services.CoursePreferenceService;
 import base.services.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/course")
@@ -37,6 +38,19 @@ public class CourseController {
         } else {
             return "Invalid request data";
         }
+    }
+
+    @PostMapping("/getCoursePreferences")
+    public List<Course> getCoursePreferences(@RequestBody GetCoursePreferencesRequestDto requestDto) {
+        String netId = requestDto.getNetId();
+        return coursePreferenceService.getCoursePreferences(netId);
+    }
+
+    @PostMapping("/deleteCoursePreference")
+    public ResponseEntity<String> deleteCoursePreference(@RequestBody DeleteCoursePreferenceRequestDto requestDto) {
+        String netId = requestDto.getNetId();
+        Integer courseId = requestDto.getCourseId();
+        return coursePreferenceService.deleteCoursePreference(netId, courseId);
     }
 }
 

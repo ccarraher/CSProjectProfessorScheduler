@@ -1,8 +1,8 @@
 package base.services;
 
 import base.models.LoginResponseDto;
-import base.models.Role;
-import base.models.User;
+import base.entities.Role;
+import base.entities.User;
 import base.repositories.RoleRepository;
 import base.repositories.UserRepository;
 import jakarta.transaction.Transactional;
