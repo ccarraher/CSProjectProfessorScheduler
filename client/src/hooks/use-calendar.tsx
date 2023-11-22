@@ -12,7 +12,14 @@ export const useCalendar = (): UseCalendarReturn => {
   const [semesterDates, setSemesterDates] = React.useState<
     ClassDetailsWithDates[]
   >([]);
-  const colors = ["#F9626D", "#856DF4", "#20CBBD", "#f9a862"];
+  const colors = [
+    "#F9626D",
+    "#856DF4",
+    "#20CBBD",
+    "#f9a862",
+    "#f97d62",
+    "#62dff9",
+  ];
 
   const convertToCalendarForm = (
     data: ClassDetails[]
