@@ -1,14 +1,39 @@
-import {z} from 'zod'
+import { z } from "zod";
 
 export const RegisterFormSchema = z.object({
-    firstName: z.string({ required_error: 'First name is required'}).regex(/^[a-zA-z\s]*$/, {message: 'First name can only contain letters and spaces'}).min(2, { message: 'First name must be at least 2 characters'}).trim(),
-    lastName: z.string({ required_error: 'Last name is required'}).regex(/^[a-zA-z\s]*$/, {message: 'Last name can only contain letters and spaces'}).min(2, { message: 'Last name must be at least 2 characters'}).trim(),
-    username: z.string({ required_error: 'Username is required'}).regex(/^[a-zA-z0-9]*$/, {message: 'Username can only contain letters and numbers'}),
-    password: z.string({ required_error: 'Password is required' }).regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
-			message:'Password must be a minimum of 8 characters & contain at least one letter, one number, and one special character.' }),
-    password2: z.string({ required_error: 'Password confirmation is required' }).regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
-            message:'Password must be a minimum of 8 characters & contain at least one letter, one number, and one special character.' })   
-})
+  firstName: z
+    .string({ required_error: "First name is required" })
+    .regex(/^[a-zA-z\s]*$/, {
+      message: "First name can only contain letters and spaces",
+    })
+    .min(2, { message: "First name must be at least 2 characters" })
+    .trim(),
+  lastName: z
+    .string({ required_error: "Last name is required" })
+    .regex(/^[a-zA-z\s]*$/, {
+      message: "Last name can only contain letters and spaces",
+    })
+    .min(2, { message: "Last name must be at least 2 characters" })
+    .trim(),
+  username: z
+    .string({ required_error: "Username is required" })
+    .regex(/^[a-zA-z0-9]*$/, {
+      message: "Username can only contain letters and numbers",
+    }),
+  password: z
+    .string({ required_error: "Password is required" })
+    .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
+      message:
+        "Password must be a minimum of 8 characters & contain at least one letter, one number, and one special character.",
+    }),
+  password2: z
+    .string({ required_error: "Password confirmation is required" })
+    .regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
+      message:
+        "Password must be a minimum of 8 characters & contain at least one letter, one number, and one special character.",
+    }),
+  isAdmin: z.boolean(),
+});
 
 // This code segment verifies the password and confirm password sections
 // are the same. When added, I get an error with export const RegisterFormFieldNames
@@ -22,8 +47,7 @@ export const RegisterFormSchema = z.object({
         });
     }
 });
-*/ 
+*/
 
-
-export type RegisterFormModel = z.infer<typeof RegisterFormSchema>
-export const RegisterFormFieldNames = RegisterFormSchema.keyof().Enum
+export type RegisterFormModel = z.infer<typeof RegisterFormSchema>;
+export const RegisterFormFieldNames = RegisterFormSchema.keyof().Enum;

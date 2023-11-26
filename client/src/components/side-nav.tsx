@@ -11,13 +11,15 @@ import { HEADER_HEIGHT } from "./header";
 import * as React from "react";
 import { Icon } from "./icon";
 import { Link } from "react-router-dom";
-export const SideNav = () => {
+export const SideNav = ({ isAdmin = false }: SideNavProps) => {
   const [selected, setSelected] = React.useState<number>(0);
 
   const handleListItemClick = (index: number, path?: string) => {
     setSelected(index);
     // Additional logic can be added here if needed for navigation
   };
+
+  const choices = isAdmin ? adminSideNavChoices : sideNavChoices;
 
   return (
     <Drawer
@@ -32,7 +34,7 @@ export const SideNav = () => {
     >
       <Toolbar />
       <List>
-        {sideNavChoices.map((choice, idx) => {
+        {choices.map((choice, idx) => {
           const isSelected = selected === idx;
           return (
             <ListItem disablePadding key={choice.text}>
@@ -62,6 +64,10 @@ export const SideNav = () => {
   );
 };
 
+interface SideNavProps {
+  readonly isAdmin?: boolean;
+}
+
 const sideNavChoices = [
   {
     text: "Home",
@@ -80,4 +86,12 @@ const sideNavChoices = [
   },
 
   // ... other choices
+];
+
+const adminSideNavChoices = [
+  {
+    text: "Home",
+    icon: "Home",
+    path: "./home",
+  },
 ];
