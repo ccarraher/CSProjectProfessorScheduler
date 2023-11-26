@@ -5,13 +5,15 @@ public class RegistrationRequestDto {
     private String password;
     private String firstName;
     private String lastName;
+    private boolean isAdmin;
 
-    public RegistrationRequestDto(String username, String password, String firstName, String lastName) {
+    public RegistrationRequestDto(String username, String password, String firstName, String lastName, boolean isAdmin) {
         super();
         this.username = username;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.isAdmin = isAdmin;
     }
 
     public String getUsername() {
@@ -44,5 +46,13 @@ public class RegistrationRequestDto {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public boolean isAdmin() {
+        return this.isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 }

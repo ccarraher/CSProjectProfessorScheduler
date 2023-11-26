@@ -1,4 +1,4 @@
-import { Box, Toolbar, darken } from "@mui/material";
+import { Box, Toolbar } from "@mui/material";
 import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import dayGridPlugin from "@fullcalendar/daygrid";
