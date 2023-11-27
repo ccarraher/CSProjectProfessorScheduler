@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.stream.IntStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -30,6 +31,8 @@ public class ScheduleService {
 	private CoursePreferenceRepository coursePreferenceRepository;
 	@Autowired
     private PreviousSemesterScheduleRepository previousSemesterScheduleRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     private Map<String, List<int[]>> professorAssignedTimes;
     private Map<String, Integer> professorLoad;
@@ -301,7 +304,6 @@ public class ScheduleService {
 	    return new int[] { dayIndex, startTime.toSecondOfDay(), endTime.toSecondOfDay() };
 	}
 
-
     public PreviousSemesterScheduleResponseDto getPreviousSemesterSchedule(String netId) {
 	        List<PreviousSemesterSchedule> previousSemesterSchedule = previousSemesterScheduleRepository.findPreviousSemesterByNetId(netId);
 	        CourseDetailDto[] courseDetails = previousSemesterSchedule.stream().map(x -> {
@@ -317,14 +319,29 @@ public class ScheduleService {
 	        return response;
 	    }
 
-	    private static LocalTime parseTime(String timeString) {
-	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mma");
-	        try {
-	            return LocalTime.parse(timeString.toUpperCase(), formatter);
-	        } catch (DateTimeParseException e) {
-	            // Handle the exception appropriately
-	            System.err.println("Failed to parse time: " + e.getMessage());
-	            return null; // or throw an exception
-	        }
+	public List<AllProfessorSchedulesResponseDTO> allProfessorsSchedules() {
+        List<PreviousSemesterSchedule> previousSemesterSchedule = previousSemesterScheduleRepository.findAll();
+        Map<String, List<PreviousSemesterSchedule>> groupedByInstructor = previousSemesterSchedule.stream()
+                .filter(schedule -> schedule.getInstructorId() != null)
+                .collect(Collectors.groupingBy(PreviousSemesterSchedule::getInstructorId));
+        return groupedByInstructor.entrySet().stream().map(entry -> {
+            String netId = entry.getKey();
+            List<PreviousSemesterSchedule> schedule = entry.getValue();
+            List<Course> courses = courseRepository.findByNetId(netId);
+            User user = userRepository.findByUsername(netId).get();
+
+            return new AllProfessorSchedulesResponseDTO(user != null ? user.getFirstName() : null, user != null ? user.getLastName() : null, netId, courses, schedule);
+        }).collect(Collectors.toList());
+    }
+
+	private static LocalTime parseTime(String timeString) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mma");
+		try {
+			return LocalTime.parse(timeString.toUpperCase(), formatter);
+		} catch (DateTimeParseException e) {
+			// Handle the exception appropriately
+			System.err.println("Failed to parse time: " + e.getMessage());
+			return null; // or throw an exception
+		}
     }
 }
