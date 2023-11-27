@@ -18,6 +18,7 @@ import java.time.format.DateTimeParseException;
 import java.util.stream.IntStream;
 import java.util.*;
 
+
 @Service
 public class ScheduleService {
 
@@ -31,8 +32,13 @@ public class ScheduleService {
     private PreviousSemesterScheduleRepository previousSemesterScheduleRepository;
 
     private Map<String, List<int[]>> professorAssignedTimes;
+    private Map<String, Integer> professorLoad;
 
 	public void createSchedule() {
+		// Initialize maps
+		professorAssignedTimes = new HashMap<>();
+		professorLoad = new HashMap<>();
+
 	    // Fetch data from repositories
 		List<Course> courses = courseRepository.findAll();
 		System.out.println("Courses: " + courses.size());
@@ -45,6 +51,9 @@ public class ScheduleService {
 
 		List<PreviousSemesterSchedule> prevSchedules = previousSemesterScheduleRepository.findAll();
     	System.out.println("Previous Semester Schedules: " + prevSchedules.size());
+
+    	// Reset instructor IDs for all previous semester schedules
+    	resetInstructorIds(prevSchedules);
 
 	    // Initialize the model
     	Model model = new Model("University Scheduling");
@@ -84,7 +93,7 @@ public class ScheduleService {
 		}
 
 		// Solve the model and print the solution
-		solveAndPrintSolution(model, professors, prevSchedules, courses, professorMap);
+		solveAndPrintSolution(model, professors, prevSchedules, courses, professorMap, professorLoad, professorAssignedTimes);
     }
 
 	private Course findCourseForPrevSection(PreviousSemesterSchedule prevSection, List<Course> courses) {
@@ -131,57 +140,67 @@ public class ScheduleService {
 	        professorPreferences.computeIfAbsent(netID, k -> new HashSet<>()).add(courseId);
 	    }
 
-	    // Initialize professorAssignedTimes
-		professorAssignedTimes = new HashMap<>();
+	    // Initialize professorAssignedTimes and professorLoad
+		professorLoad = new HashMap<>(); // Initialize the map
 		for (String netID : professorMap.keySet()) {
 			professorAssignedTimes.put(netID, new ArrayList<>());
+			professorLoad.put(netID, 0); // Initialize each professor's load to 0
 		}
 	}
-
 
 	private Constraint[] buildConstraintsForPrevSection(
 	    int sectionIndex, int[] classTime, String[] classDays, Course course,
 	    Map<String, Integer> professorMap, Map<String, Set<Integer>> professorPreferences,
 	    Map<Integer, List<int[]>> professorAvailability, Model model, IntVar[] professors,
-	    Map<Integer, Integer> courseMap, String prevInstructorID
-	) {
+	    Map<Integer, Integer> courseMap, String prevInstructorID) {
+
 	    List<Constraint> possibleAssignments = new ArrayList<>();
-	    Integer courseId = course.getCourseId(); // Add this line to get the course ID
+	    Integer courseId = course.getCourseId();
 
 	    for (Map.Entry<String, Integer> entry : professorMap.entrySet()) {
 	        String professorNetID = entry.getKey();
 	        int professorIndex = entry.getValue();
 
+	        // Check if the professor prefers the course
 	        Set<Integer> preferredCourses = professorPreferences.get(professorNetID);
-        	if (preferredCourses != null && preferredCourses.contains(courseId)) {
-				List<int[]> availableTimes = professorAvailability.get(professorIndex);
-				boolean isAvailableAllDays = true;
+	        if (preferredCourses != null && preferredCourses.contains(courseId)) {
+	            List<int[]> availableTimes = professorAvailability.get(professorIndex);
+	            boolean isAvailableAllDays = true;
 
-				for (String day : classDays) {
-					int dayIndex = dayToIndex(day.trim());
-					boolean isAvailableThisDay = false;
+	            // Check availability for all class days
+	            for (String day : classDays) {
+	                int dayIndex = dayToIndex(day.trim());
+	                boolean isAvailableThisDay = false;
 
-					for (int[] timeSlot : availableTimes) {
-						if (timeSlot[0] == dayIndex && timeSlot[1] < classTime[1] && timeSlot[2] > classTime[0]) {
-							isAvailableThisDay = true;
-							break;
-						}
-					}
+	                for (int[] timeSlot : availableTimes) {
+	                    if (timeSlot[0] == dayIndex && timeSlot[1] < classTime[1] && timeSlot[2] > classTime[0]) {
+	                        isAvailableThisDay = true;
+	                        break;
+	                    }
+	                }
 
-					if (!isAvailableThisDay) {
-						isAvailableAllDays = false;
-						break;
-					}
-				}
+	                if (!isAvailableThisDay) {
+	                    isAvailableAllDays = false;
+	                    break;
+	                }
+	            }
 
-				if (isAvailableAllDays && !hasTimeOverlap(classTime, professorAssignedTimes.get(professorNetID))) {
-					possibleAssignments.add(model.arithm(professors[sectionIndex], "=", professorIndex));
-					professorAssignedTimes.get(professorNetID).add(classTime); // Add this class time to the professor's schedule
-				}
-			}
-		}
+	            // Check for time overlap and load balancing
+	            if (isAvailableAllDays && !hasTimeOverlap(classTime, professorAssignedTimes.get(professorNetID))) {
+	                int currentLoad = professorLoad.getOrDefault(professorNetID, 0);
+	                int minLoad = getMinimumLoad(professorLoad);
+	                if (currentLoad <= minLoad) {
+	                    possibleAssignments.add(model.arithm(professors[sectionIndex], "=", professorIndex));
+	                    professorAssignedTimes.get(professorNetID).add(classTime); // Add this class time to the professor's schedule
+	                }
+	            }
+	        }
+	    }
+	    return possibleAssignments.toArray(new Constraint[0]);
+	}
 
-		return possibleAssignments.toArray(new Constraint[0]);
+	private int getMinimumLoad(Map<String, Integer> loadMap) {
+	    return Collections.min(loadMap.values());
 	}
 
 	private boolean hasTimeOverlap(int[] classTime, List<int[]> assignedTimes) {
@@ -221,44 +240,57 @@ public class ScheduleService {
 	    }
 	}
 
-
+	// Set every record for instructorId to null
+	private void resetInstructorIds(List<PreviousSemesterSchedule> prevSchedules) {
+	    for (PreviousSemesterSchedule schedule : prevSchedules) {
+	        schedule.setInstructorId(null);
+	        previousSemesterScheduleRepository.save(schedule);
+	    }
+	}
 
 	private void solveAndPrintSolution(
-	        Model model, IntVar[] professors, List<PreviousSemesterSchedule> prevSchedules,
-	        List<Course> courses, Map<String, Integer> professorMap
-	    ) {
-	        Solver solver = model.getSolver();
-	        if (solver.solve()) {
-	            System.out.println("Solution:");
-	            for (int i = 0; i < professors.length; i++) {
-	                final int professorIndex = professors[i].getValue(); // Final variable for lambda
+	    Model model, IntVar[] professors, List<PreviousSemesterSchedule> prevSchedules,
+	    List<Course> courses, Map<String, Integer> professorMap, Map<String, Integer> professorLoad, Map<String, List<int[]>> professorAssignedTimes
+	) {
+	    Solver solver = model.getSolver();
+	    if (solver.solve()) {
+	        System.out.println("Solution:");
+	        for (int i = 0; i < professors.length; i++) {
+	            int professorIndex = professors[i].getValue();
 
-	                PreviousSemesterSchedule prevSection = prevSchedules.get(i);
-	                Course course = findCourseForPrevSection(prevSection, courses);
+	            PreviousSemesterSchedule prevSection = prevSchedules.get(i);
+	            Course course = findCourseForPrevSection(prevSection, courses);
+	            String courseName = course != null ? course.getPrefix() + " " + course.getCourseNumber() : "Unknown Course";
 
-	                if (professorIndex >= 0) {
-	                    String netID = professorMap.entrySet().stream()
-	                        .filter(entry -> entry.getValue().equals(professorIndex))
-	                        .map(Map.Entry::getKey)
-	                        .findFirst()
-	                        .orElse("Unknown NetID");
+	            if (professorIndex >= 0) {
+	                // Find professor's netID and update the schedule
+	                String netID = findProfessorNetID(professorIndex, professorMap);
+	                System.out.println(netID + " is assigned to " + courseName + " " + prevSection.getSectionNumber());
 
-	                    String courseName = course != null ? course.getPrefix() + " " + course.getCourseNumber() : "Unknown Course";
-	                    System.out.println(netID + " is assigned to " + courseName + " " + prevSection.getSectionNumber());
+	                // Update the professor's assigned times and load
+	                int[] classTime = parseClassTime(prevSection.getTime());
+	                professorAssignedTimes.get(netID).add(classTime);
+	                professorLoad.put(netID, professorLoad.getOrDefault(netID, 0) + 1);
 
-	                    // Update the PreviousSemesterSchedule with the assigned netID
-	                    prevSection.setInstructorId(netID);
-	                    previousSemesterScheduleRepository.save(prevSection);
-	                } else {
-	                    String courseName = course != null ? course.getPrefix() + " " + course.getCourseNumber() : "Unknown Course";
-	                    System.out.println("No professor can be assigned to " + courseName + " " + prevSection.getSectionNumber());
-	                }
+	                // Update the PreviousSemesterSchedule with the assigned netID
+	                prevSection.setInstructorId(netID);
+	                previousSemesterScheduleRepository.save(prevSection);
+	            } else {
+	                System.out.println("No professor can be assigned to " + courseName + " " + prevSection.getSectionNumber());
 	            }
-	        } else {
-	            System.out.println("No solution found.");
 	        }
-    	}
+	    } else {
+	        System.out.println("No solution found.");
+	    }
+	}
 
+	private String findProfessorNetID(int professorIndex, Map<String, Integer> professorMap) {
+	    return professorMap.entrySet().stream()
+	                       .filter(entry -> entry.getValue().equals(professorIndex))
+	                       .map(Map.Entry::getKey)
+	                       .findFirst()
+	                       .orElse("Unknown NetID");
+	}
 
 	private int[] convertAvailability(Availability availability) {
 	    String[] times = availability.getTimeSlot().split(" - ");
