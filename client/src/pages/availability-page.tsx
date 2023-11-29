@@ -19,11 +19,6 @@ export const AvailabilityPage = () => {
     await modifyAvailability(availability);
     console.log(availability);
     console.log(JSON.stringify(availability));
-    if (isOperationSuccessful) {
-      console.log("success");
-    } else {
-      console.log("error");
-    }
   }
   catch(error){
 console.log("error occured",error);
