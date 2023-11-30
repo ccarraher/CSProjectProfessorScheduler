@@ -15,7 +15,7 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
     "7:00pm - 8:30pm",
     "8:30pm - 10:00pm"
   ];
-  const icon = <Box sx={{ width: 70, height:40.5, backgroundColor: 'white', border: '.05px solid black', margin:'0px', padding:'0px'}} />;
+  const icon = <Box sx={{ width: 70, height:40.5, backgroundColor: 'transparent', border: '.05px solid black', margin:'0px', padding:'0px'}} />;
   const checkedIcon = <Box sx={{ width: 70, height:40.5, backgroundColor: '#646cff', border: '.05px solid black' , margin:'0px',padding:'0px'}} />;
 
   interface AvailabilityInputProps {
@@ -81,7 +81,6 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
           sx={{
             display: 'block',
             justifyContent: 'center',
-            bgcolor: 'white',
             minHeight: '80vh',
             position: 'sticky',
             pl: '50px',
@@ -98,7 +97,7 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
             }}
           >
             <Typography
-              variant="h6"
+              variant="h5"
               className="title"
               sx={{
                 width: 'fit-content',
@@ -107,7 +106,7 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
                 mb: '10px',
                 p: 0,
                 textAlign: 'center',
-                color: 'black'
+                color: 'black',
               }}
             >
               Enter your availability below.
@@ -128,7 +127,11 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
               Select cell to mark that time slot as "available". All blank cells will be marked as "unavailable" time slots.
             </Typography>
           </Box>
-
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
           <Box
             component="form"
             onSubmit={handleSubmit}
@@ -141,8 +144,9 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
               border: '1px solid #a8b2b9',
               borderRadius: '8px',
               boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-              backgroundColor: 'white',
+              backgroundColor: 'transparent',
               height: 'min-content',
+              width: 'min-content'
             }}
           >
             <Box
@@ -227,6 +231,7 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
               </Button>
             </Box>
           </Box>
+                  </Box>
                   </Box>
                
   
