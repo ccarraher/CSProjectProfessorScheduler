@@ -107,6 +107,19 @@ export const useAdmin = (): UseAdminReturn => {
     setIsProfessorDetailModalOpen(false);
   };
 
+  const handleSchedulerClick = async () => {
+    const requestHeaders: HeadersInit = new Headers();
+    requestHeaders.set("Content-Type", "application/json");
+    requestHeaders.set("Authorization", `Bearer ${user?.authToken}`);
+    const response = await fetch(
+      "http://127.0.0.1:8080/schedule/createSchedule",
+      {
+        method: "GET",
+        headers: requestHeaders,
+      }
+    );
+  };
+
   return {
     openModal,
     closeModal,
@@ -115,6 +128,7 @@ export const useAdmin = (): UseAdminReturn => {
     courseColumns,
     isProfessorDetailModalOpen,
     professorSchedules,
+    handleSchedulerClick,
   };
 };
 
@@ -126,6 +140,7 @@ interface UseAdminReturn {
   readonly courseColumns: GridColDef<ProfessorCourse>[];
   readonly isProfessorDetailModalOpen: boolean;
   readonly professorSchedules: ProfessorSchedule[];
+  readonly handleSchedulerClick: () => void;
 }
 
 export interface AllProfessorSchedulesResponse {
