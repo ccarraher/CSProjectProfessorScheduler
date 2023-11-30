@@ -21,6 +21,7 @@ export const AdminHomePage = (): JSX.Element => {
     courseColumns,
     isProfessorDetailModalOpen,
     professorSchedules,
+    handleSchedulerClick,
   } = useAdmin();
   return (
     <Box
@@ -48,7 +49,9 @@ export const AdminHomePage = (): JSX.Element => {
           <Typography variant="h6" color="black">
             Run scheduler with current professor preferences
           </Typography>
-          <Button variant="contained">Run Scheduler</Button>
+          <Button variant="contained" onClick={handleSchedulerClick}>
+            Run Scheduler
+          </Button>
         </Box>
         <DataGrid
           columns={columns}
