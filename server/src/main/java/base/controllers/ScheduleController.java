@@ -17,4 +17,9 @@ public class ScheduleController {
         String netId = request.getNetId();
         return scheduleService.getPreviousSemesterSchedule(netId);
     }
+
+    @GetMapping("/createSchedule")
+	    public void createSchedule() {
+	        scheduleService.createSchedule();
+    }
 }
