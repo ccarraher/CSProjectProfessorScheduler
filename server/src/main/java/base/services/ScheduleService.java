@@ -160,64 +160,66 @@ public class ScheduleService {
 	    List<Constraint> possibleAssignments = new ArrayList<>();
 	    Integer courseId = course.getCourseId();
 
+	    // Collect eligible professors
+	    List<Integer> eligibleProfessors = new ArrayList<>();
 	    for (Map.Entry<String, Integer> entry : professorMap.entrySet()) {
 	        String professorNetID = entry.getKey();
 	        int professorIndex = entry.getValue();
 
-	        // Check if the professor prefers the course
-	        Set<Integer> preferredCourses = professorPreferences.get(professorNetID);
-	        if (preferredCourses != null && preferredCourses.contains(courseId)) {
-	            List<int[]> availableTimes = professorAvailability.get(professorIndex);
-	            boolean isAvailableAllDays = true;
+	        boolean prefersCourse = professorPreferences.getOrDefault(professorNetID, Collections.emptySet()).contains(courseId);
+	        boolean isAvailableAllDays = checkAvailabilityForAllDays(classDays, professorAvailability.get(professorIndex), classTime);
+	        int currentLoad = professorLoad.getOrDefault(professorNetID, 0);
 
-	            // Check availability for all class days
-	            for (String day : classDays) {
-	                int dayIndex = dayToIndex(day.trim());
-	                boolean isAvailableThisDay = false;
-
-	                for (int[] timeSlot : availableTimes) {
-	                    if (timeSlot[0] == dayIndex && timeSlot[1] < classTime[1] && timeSlot[2] > classTime[0]) {
-	                        isAvailableThisDay = true;
-	                        break;
-	                    }
-	                }
-
-	                if (!isAvailableThisDay) {
-	                    isAvailableAllDays = false;
-	                    break;
-	                }
-	            }
-
-	            // Check for time overlap and load balancing
-	            if (isAvailableAllDays && !hasTimeOverlap(classTime, professorAssignedTimes.get(professorNetID))) {
-	                int currentLoad = professorLoad.getOrDefault(professorNetID, 0);
-	                int minLoad = getMinimumLoad(professorLoad);
-	                if (currentLoad <= minLoad) {
-	                    possibleAssignments.add(model.arithm(professors[sectionIndex], "=", professorIndex));
-	                    professorAssignedTimes.get(professorNetID).add(classTime); // Add this class time to the professor's schedule
-	                }
-	            }
+	        if (prefersCourse && isAvailableAllDays && currentLoad < 5 && !hasTimeOverlapForDay(classTime, dayToIndex(classDays[0].trim()), professorAssignedTimes.get(professorNetID))) {
+	            eligibleProfessors.add(professorIndex);
 	        }
 	    }
+
+	    // Randomly assign professors
+	    Collections.shuffle(eligibleProfessors);
+	    for (int professorIndex : eligibleProfessors) {
+	        possibleAssignments.add(model.arithm(professors[sectionIndex], "=", professorIndex));
+	        // Update the assigned times and load for the randomly selected professor
+	        int firstDayIndex = dayToIndex(classDays[0].trim());
+	        professorAssignedTimes.get(findProfessorNetID(professorIndex, professorMap)).add(new int[] { firstDayIndex, classTime[0], classTime[1] });
+	        professorLoad.put(findProfessorNetID(professorIndex, professorMap), professorLoad.getOrDefault(findProfessorNetID(professorIndex, professorMap), 0) + 1);
+	    }
+
 	    return possibleAssignments.toArray(new Constraint[0]);
 	}
 
-	private int getMinimumLoad(Map<String, Integer> loadMap) {
-	    return Collections.min(loadMap.values());
-	}
-
-	private boolean hasTimeOverlap(int[] classTime, List<int[]> assignedTimes) {
+	private boolean hasTimeOverlapForDay(int[] classTime, int dayIndex, List<int[]> assignedTimes) {
 	    if (assignedTimes == null) {
 	        return false;
 	    }
 
 	    for (int[] assignedTime : assignedTimes) {
-	        if ((classTime[0] < assignedTime[1] && classTime[1] > assignedTime[0]) ||
-	            (assignedTime[0] < classTime[1] && assignedTime[1] > classTime[0])) {
+	        if (assignedTime[0] == dayIndex && ((classTime[0] < assignedTime[2] && classTime[1] > assignedTime[1]) ||
+	            (assignedTime[1] < classTime[1] && assignedTime[2] > classTime[0]))) {
 	            return true;
 	        }
 	    }
 	    return false;
+	}
+
+
+	private boolean checkAvailabilityForAllDays(String[] classDays, List<int[]> availableTimes, int[] classTime) {
+	    for (String day : classDays) {
+	        int dayIndex = dayToIndex(day.trim());
+	        boolean isAvailableThisDay = false;
+
+	        for (int[] timeSlot : availableTimes) {
+	            if (timeSlot[0] == dayIndex && timeSlot[1] <= classTime[1] && timeSlot[2] >= classTime[0]) {
+	                isAvailableThisDay = true;
+	                break;
+	            }
+	        }
+
+	        if (!isAvailableThisDay) {
+	            return false;
+	        }
+	    }
+	    return true;
 	}
 
 	private boolean isProfessorAvailableOnDays(List<int[]> availability, int[] classTime) {
