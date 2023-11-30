@@ -19,7 +19,6 @@ import java.util.stream.IntStream;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 @Service
 public class ScheduleService {
 
@@ -32,6 +31,7 @@ public class ScheduleService {
 	@Autowired
     private PreviousSemesterScheduleRepository previousSemesterScheduleRepository;
     @Autowired
+
     private UserRepository userRepository;
 
     private Map<String, List<int[]>> professorAssignedTimes;
@@ -322,6 +322,29 @@ public class ScheduleService {
 	    }
 
 	public List<AllProfessorSchedulesResponseDTO> allProfessorsSchedules() {
+
+    private CourseRepository courseRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public PreviousSemesterScheduleResponseDto getPreviousSemesterSchedule(String netId) {
+        List<PreviousSemesterSchedule> previousSemesterSchedule = previousSemesterScheduleRepository.findPreviousSemesterByNetId(netId);
+        CourseDetailDto[] courseDetails = previousSemesterSchedule.stream().map(x -> {
+            Course course = courseRepository.findById(x.getCourseId()).get();
+            String classNumber = course.getPrefix() + " " + course.getCourseNumber() + "." + x.getSectionNumber();
+            String[] timeParts = x.getTime().split(" - ");
+            LocalTime startTime = parseTime(timeParts[0].replace("am", "AM").replace("pm", "PM"));
+            LocalTime endTime = parseTime(timeParts[1].replace("am", "AM").replace("pm", "PM"));
+
+            return new CourseDetailDto(classNumber, course.getCourseName(), startTime, endTime, x.getDays().split(", "), netId);
+        }).toArray(CourseDetailDto[]::new);
+        PreviousSemesterScheduleResponseDto response = new PreviousSemesterScheduleResponseDto(courseDetails);
+        return response;
+    }
+
+    public List<AllProfessorSchedulesResponseDTO> allProfessorsSchedules() {
+
         List<PreviousSemesterSchedule> previousSemesterSchedule = previousSemesterScheduleRepository.findAll();
         Map<String, List<PreviousSemesterSchedule>> groupedByInstructor = previousSemesterSchedule.stream()
                 .filter(schedule -> schedule.getInstructorId() != null)

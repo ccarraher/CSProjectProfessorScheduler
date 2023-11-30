@@ -34,15 +34,15 @@ public class AuthenticationService {
     @Autowired
     private TokenService tokenService;
 
-    public User registerUser(String username, String password, String firstName, String lastName) {
+    public User registerUser(String username, String password, String firstName, String lastName, boolean isAdmin) {
         String encodedPassword = passwordEncoder.encode(password);
-        Role userRole = roleRepository.findByAuthority("USER").get();
+        Role userRole = roleRepository.findByAuthority(isAdmin ? "ADMIN" : "USER").get();
 
         Set<Role> authorities = new HashSet<>();
 
         authorities.add(userRole);
 
-        return userRepository.save(new User(username, encodedPassword, authorities, firstName, lastName, "Instructor"));
+        return userRepository.save(new User(username, encodedPassword, authorities, firstName, lastName, isAdmin ? "Admin" : "Instructor"));
     }
 
     public LoginResponseDto login(String username, String password) {
