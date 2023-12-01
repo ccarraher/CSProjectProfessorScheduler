@@ -8,7 +8,7 @@ export const CourseSelectionPage = (): JSX.Element => {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
       <Toolbar />
-      <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1, p: 3 }}>
+      <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1, p: 3, overflow: 'auto' }}>
         <CourseSelect fetchCoursePreferences={fetchCoursePreferences} />
         <CoursePreferenceDataGrid
           courses={courses}

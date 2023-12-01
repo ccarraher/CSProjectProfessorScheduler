@@ -1,4 +1,4 @@
-import { Box, Toolbar } from "@mui/material";
+import { Box, Toolbar, Snackbar,Alert } from "@mui/material";
 import { useForm, FormProvider } from 'react-hook-form';
 import AvailabilityInput from './AvailabilityInput';
 import { AuthContext } from '../hooks/use-auth';
@@ -21,8 +21,9 @@ export const AvailabilityPage = () => {
     console.log(JSON.stringify(availability));
   }
   catch(error){
-console.log("error occured",error);
+    console.log("error occured",error);
   }
+  
   };
 
   return (
@@ -32,11 +33,18 @@ console.log("error occured",error);
         <AvailabilityInput onAvailabilitySubmit={handleAvailabilitySubmit} />
       </Box>
       {showNotification && (
-        // Render your notification component or message here
-        <div>
-          {isOperationSuccessful ? "Operation successful" : "Operation failed"}
-          
-        </div>
+        <Snackbar
+          open={showNotification}
+          autoHideDuration={6000}
+          onClose={closeNotification}
+        >
+          <Alert
+            onClose={closeNotification}
+            severity={isOperationSuccessful ? "success" : "error"}
+          >
+            {isOperationSuccessful ? "Operation successful" : "Operation failed"}
+          </Alert>
+        </Snackbar>
       )}
     </Box>
   );

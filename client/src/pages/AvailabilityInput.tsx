@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, Checkbox, FormControlLabel, Typography } from '@mui/material';
 import moment from "moment";
 
-const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
   const allHours = [
     "8:00am - 8:30am",
     "8:30am - 10:00am",
@@ -15,20 +15,22 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
     "7:00pm - 8:30pm",
     "8:30pm - 10:00pm"
   ];
-  const icon = <Box sx={{ width: 70, height:40.5, backgroundColor: 'transparent', border: '.05px solid black', margin:'0px', padding:'0px'}} />;
-  const checkedIcon = <Box sx={{ width: 70, height:40.5, backgroundColor: '#646cff', border: '.05px solid black' , margin:'0px',padding:'0px'}} />;
+  const icon = <Box sx={{ width: 120, height:50, backgroundColor: 'transparent', border: '.05px solid black', margin:'0px', padding:'0px'}} />;
+  const checkedIcon = <Box sx={{ width: 120, height:50, backgroundColor: '#646cff', border: '.05px solid black' , margin:'0px',padding:'0px'}} />;
 
   interface AvailabilityInputProps {
     onAvailabilitySubmit: (availability: { [day: string]: string[] }) => void;
   }  
   
+  
   const AvailabilityInput: React.FC<AvailabilityInputProps> = ({ onAvailabilitySubmit }) => {
+
     const [selectedTimeSlots, setSelectedTimeSlots] = useState<{ [day: string]: string[] }>({
-      Mon: [],
-      Tue: [],
-      Wed: [],
-      Thu: [],
-      Fri: []
+      Monday: [],
+      Tuesday: [],
+      Wednesday: [],
+      Thursday: [],
+      Friday: []
     });
   
     const handleTimeSlotChange = (day: string, timeSlot: string, isChecked: boolean) => {
@@ -47,8 +49,10 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
       });
     };
   
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault(); // Prevent default form submission behavior
+      
       const splitTimeSlot = (timeSlot: string) => {
         const times = timeSlot.match(/\d+:\d+\w+/g);
         if (!times || times.length !== 2) return [];
@@ -66,11 +70,13 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
     
       const availability: { [day: string]: string[] } = {};
     
+      
       Object.entries(selectedTimeSlots).forEach(([day, slots]) => {
         availability[day] = slots.flatMap(slot => splitTimeSlot(slot));
       });
     
       onAvailabilitySubmit(availability);
+      
     };
 
   return (
@@ -97,7 +103,7 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
             }}
           >
             <Typography
-              variant="h5"
+              variant="h4"
               className="title"
               sx={{
                 width: 'fit-content',
@@ -106,7 +112,9 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
                 mb: '10px',
                 p: 0,
                 textAlign: 'center',
-                color: 'black',
+                color:'GrayText',
+                
+                
               }}
             >
               Enter your availability below.
@@ -158,9 +166,9 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
                 mb:'10px'
               }}
             >
-            <Box sx={{ width: '130px',marginRight:"80px"}} /> {/* This placeholder is for the times column */}
+            <Box sx={{ width: '160px', paddingLeft:'5px',paddingRight:'5px'}} /> {/* This placeholder is for the times column */}
           {daysOfWeek.map((day) => (
-            <Box key={day} className="day-name" sx={{flex: 1,color:'black',width:"71px"}}>{day}</Box>
+            <Box key={day} className="day-name" sx={{flex: 1,color:'black',width:"120px",textAlign:'center'}}>{day}</Box>
           ))}
             </Box>
             <Box
@@ -179,7 +187,7 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
               }}>
             
               {allHours.map((hour) => (
-              <Box key={hour} className="hour" sx={{textAlign:"center",color:'black', paddingLeft:'5px',paddingRight:'5px', width:"160px", height:40.5, border: '.05px solid black',}}>{hour}</Box>
+              <Box key={hour} className="hour" sx={{textAlign:"center",color:'black', paddingLeft:'5px',paddingRight:'5px', width:"160px", height:50, border: '.05px solid black',}}>{hour}</Box>
               ))}
             </Box> 
 
@@ -229,10 +237,13 @@ const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
               >
                 SUBMIT
               </Button>
+              
             </Box>
           </Box>
                   </Box>
+                  
                   </Box>
+                  
                
   
   );
