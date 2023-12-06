@@ -46,8 +46,8 @@ export const useAdmin = (): UseAdminReturn => {
         (professorCourses, id) => {
           const courses = professorCourses.map((x) => x.course);
           const professorSchedule = {
-            firstName: professorCourses[0].firstName,
-            lastName: professorCourses[0].lastName,
+            firstName: professorCourses?.[0]?.firstName ?? "-",
+            lastName: professorCourses?.[0]?.lastName ?? "-",
             id,
             courses: uniqBy(courses, "id"),
           };
