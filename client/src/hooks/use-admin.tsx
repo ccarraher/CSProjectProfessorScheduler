@@ -2,6 +2,7 @@ import * as React from "react";
 import { Course } from "../types/entity-types";
 import { AuthContext } from "./use-auth";
 import { GridColDef } from "@mui/x-data-grid";
+import _, { groupBy, map, uniq, uniqBy } from "lodash-es";
 
 export const useAdmin = (): UseAdminReturn => {
   const [professorSchedules, setProfessorSchedules] = React.useState<
@@ -11,39 +12,56 @@ export const useAdmin = (): UseAdminReturn => {
     React.useState<boolean>(false);
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
   const { user } = React.useContext(AuthContext);
+
+  const fetchAllProfessorSchedules = async () => {
+    if (user?.authToken) {
+      const requestHeaders: HeadersInit = new Headers();
+      requestHeaders.set("Content-Type", "application/json");
+      requestHeaders.set("Authorization", `Bearer ${user?.authToken}`);
+      const response = await fetch(
+        "http://127.0.0.1:8080/admin/allProfessorSchedules",
+        {
+          method: "GET",
+          headers: requestHeaders,
+        }
+      );
+      const jsonResponse: AllProfessorSchedulesResponse[] =
+        await response.json();
+      const mappedToAppropriateObject = jsonResponse.map((x) => {
+        return {
+          id: x.netId,
+          firstName: x.firstName,
+          lastName: x.lastName,
+          course: {
+            id: x.courses.courseId,
+            courseNumber: `${x.courses.prefix} ${x.courses.courseNumber}.${x.schedule.sectionNumber}`,
+            courseName: x.courses.courseName,
+            time: x.schedule.time,
+            days: x.schedule.days,
+          },
+        };
+      });
+      const profSchedules: ProfessorSchedule[] = map(
+        groupBy(mappedToAppropriateObject, "id"),
+        (professorCourses, id) => {
+          const courses = professorCourses.map((x) => x.course);
+          const professorSchedule = {
+            firstName: professorCourses[0].firstName,
+            lastName: professorCourses[0].lastName,
+            id,
+            courses: uniqBy(courses, "id"),
+          };
+          return professorSchedule;
+        }
+      );
+      setProfessorSchedules(profSchedules);
+    }
+  };
+
   let didInit = false;
   React.useEffect(() => {
     if (user && user.authToken && !didInit) {
       didInit = true;
-      const fetchAllProfessorSchedules = async () => {
-        const requestHeaders: HeadersInit = new Headers();
-        requestHeaders.set("Content-Type", "application/json");
-        requestHeaders.set("Authorization", `Bearer ${user.authToken}`);
-        const response = await fetch(
-          "http://127.0.0.1:8080/admin/allProfessorSchedules",
-          {
-            method: "GET",
-            headers: requestHeaders,
-          }
-        );
-        const jsonResponse: AllProfessorSchedulesResponse[] =
-          await response.json();
-        const profSchedules: ProfessorSchedule[] = jsonResponse.map((x) => ({
-          ...x,
-          id: x.netId,
-          courses: x.schedule.map((y) => {
-            const course = x.courses.find((z) => z.courseId === y.courseId);
-            return {
-              id: y.courseId,
-              courseNumber: `${course?.prefix} ${course?.courseNumber}.${y.sectionNumber}`,
-              courseName: course?.courseName ?? "",
-              time: y.time,
-              days: y.days,
-            };
-          }),
-        }));
-        setProfessorSchedules(profSchedules);
-      };
       fetchAllProfessorSchedules();
     }
   }, [user?.authToken]);
@@ -118,6 +136,7 @@ export const useAdmin = (): UseAdminReturn => {
         headers: requestHeaders,
       }
     );
+    fetchAllProfessorSchedules();
   };
 
   return {
@@ -147,8 +166,8 @@ export interface AllProfessorSchedulesResponse {
   readonly firstName: string;
   readonly lastName: string;
   readonly netId: string;
-  readonly schedule: Schedule[];
-  readonly courses: Course[];
+  readonly schedule: Schedule;
+  readonly courses: Course;
 }
 
 export interface ProfessorSchedule {
