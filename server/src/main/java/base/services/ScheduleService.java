@@ -323,17 +323,12 @@ public class ScheduleService {
     public List<AllProfessorSchedulesResponseDTO> allProfessorsSchedules() {
 
         List<PreviousSemesterSchedule> previousSemesterSchedule = previousSemesterScheduleRepository.findAll();
-        Map<String, List<PreviousSemesterSchedule>> groupedByInstructor = previousSemesterSchedule.stream()
-                .filter(schedule -> schedule.getInstructorId() != null)
-                .collect(Collectors.groupingBy(PreviousSemesterSchedule::getInstructorId));
-        return groupedByInstructor.entrySet().stream().map(entry -> {
-            String netId = entry.getKey();
-            List<PreviousSemesterSchedule> schedule = entry.getValue();
-            List<Course> courses = courseRepository.findByNetId(netId);
-            User user = userRepository.findByUsername(netId).get();
-
-            return new AllProfessorSchedulesResponseDTO(user != null ? user.getFirstName() : null, user != null ? user.getLastName() : null, netId, courses, schedule);
-        }).collect(Collectors.toList());
+		return previousSemesterSchedule.stream().filter(schedule -> schedule.getInstructorId() != null).map(schedule -> {
+			String netId = schedule.getInstructorId();
+			Course course = courseRepository.findById(schedule.getCourseId()).get();
+			User user = userRepository.findByUsername(netId).get();
+			return new AllProfessorSchedulesResponseDTO(user != null ? user.getFirstName() : null, user != null ? user.getLastName() : null, netId, course, schedule);
+		}).collect(Collectors.toList());
     }
 
 	private static LocalTime parseTime(String timeString) {

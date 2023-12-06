@@ -9,9 +9,9 @@ public class AllProfessorSchedulesResponseDTO {
     private String firstName;
     private String lastName;
     private String netId;
-    private List<Course> courses;
+    private Course course;
 
-    private List<PreviousSemesterSchedule> schedule;
+    private PreviousSemesterSchedule schedule;
 
     public AllProfessorSchedulesResponseDTO() {
     }
@@ -40,27 +40,27 @@ public class AllProfessorSchedulesResponseDTO {
         this.netId = netId;
     }
 
-    public List<Course> getCourses() {
-        return courses;
+    public Course getCourses() {
+        return this.course;
     }
 
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
+    public void setCourses(Course course) {
+        this.course = course;
     }
 
-    public List<PreviousSemesterSchedule> getSchedule() {
+    public PreviousSemesterSchedule getSchedule() {
         return schedule;
     }
 
-    public void setSchedule(List<PreviousSemesterSchedule> schedule) {
+    public void setSchedule(PreviousSemesterSchedule schedule) {
         this.schedule = schedule;
     }
 
-    public AllProfessorSchedulesResponseDTO(String firstName, String lastName, String netId, List<Course> courses, List<PreviousSemesterSchedule> schedule) {
+    public AllProfessorSchedulesResponseDTO(String firstName, String lastName, String netId, Course course, PreviousSemesterSchedule schedule) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.netId = netId;
-        this.courses = courses;
+        this.course = course;
         this.schedule = schedule;
     }
 }
