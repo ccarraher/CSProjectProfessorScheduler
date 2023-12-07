@@ -1,3 +1,14 @@
+/*
+ * This file is part of the scheduling system implemented for the Instructor Scheduler senior project.
+ * It utilizes Choco-solver, an open-source Java library for constraint satisfaction problems (CSP),
+ * constraint programming (CP), and explanation-based constraint solving (e-CP).
+ *
+ * Choco-solver is licensed under the BSD 4-Clause License by IMT Atlantique.
+ * For more details, see the license information attached in this project's documentation.
+ *
+ * Copyright (c) 2023
+ */
+
 package base.services;
 
 import base.entities.*;
